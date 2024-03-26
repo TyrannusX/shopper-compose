@@ -1,0 +1,47 @@
+services:
+  shopper-product-service:
+    image: shopper-product-service
+    pull_policy: never
+    ports:
+      - 8001:80
+    hostname: shopper-product-service
+    depends_on:
+      - rabbitmq
+      - mongodb
+    networks:
+      - shopper-net
+  shopper-payment-service:
+    image: shopper-payment-service
+    pull_policy: never
+    ports:
+      - 8002:80
+    hostname: shopper-payment-service
+    depends_on:
+      - rabbitmq
+      - mongodb
+    networks:
+      - shopper-net
+  rabbitmq:
+    image: rabbitmq:3-management
+    pull_policy: missing
+    ports:
+      - 5672:5672
+      - 15672:15672
+    hostname: rabbitmq
+    networks:
+      - shopper-net
+    volumes:
+      - ./data/mnesia:/var/lib/rabbitmq/mnesia
+      - ./data/config:/etc/rabbitmq/rabbitmq
+      - ./data/logs:/var/log/rabbitmq
+  mongodb:
+    image: mongodb/mongodb-community-server
+    pull_policy: missing
+    ports:
+      - 27017:27017
+    hostname: mongodb
+    networks:
+      - shopper-net
+
+networks:
+  shopper-net:
